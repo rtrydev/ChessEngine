@@ -139,7 +139,7 @@ namespace ChessEngine.BoardHandle
             
         }
 
-        private BoardPoint FindKingByColor(FigureColor color)
+        public BoardPoint FindKingByColor(FigureColor color)
         {
             for (int i = 0; i < 8; i++)
             {
@@ -252,7 +252,7 @@ namespace ChessEngine.BoardHandle
                     var figure = GetFigureOnLocation(new BoardPoint(j, i));
                     if (figure is not null)
                     {
-                        var name = figure.Color == FigureColor.Black ? FigureNames.GetFigureName(figure).ToUpper() : FigureNames.GetFigureName(figure);
+                        var name = figure.Color == FigureColor.White ? FigureNames.GetFigureName(figure).ToUpper() : FigureNames.GetFigureName(figure);
                         sb.Append(name + "  ");
 
                     }

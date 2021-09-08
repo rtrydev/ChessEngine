@@ -42,8 +42,9 @@ namespace ChessEngine.Figures
             {
                 var lenght = Math.Abs(point.X - Location.X);
                 if (lenght > 2) return false;
-                if (lenght != 1)
+                if (lenght == 2)
                 {
+                    if (point.Y != Location.Y) return false;
                     var direction = Math.Sign(point.X - Location.X);
                     for (int i = lenght; i < 5; i++)
                     {

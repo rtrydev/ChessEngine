@@ -9,7 +9,7 @@ namespace ChessEngine.Figures
         public bool CanCastle { get; set; }
         public Rook(FigureColor color, Board board, BoardPoint location) : base(color, board, location)
         {
-            CanCastle = true;
+            CanCastle = false;
         }
 
         public Rook(FigureColor color, Board board, FigureState state) : base(color, board, state)

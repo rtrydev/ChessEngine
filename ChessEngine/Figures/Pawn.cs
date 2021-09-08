@@ -1,5 +1,6 @@
 using System;
 using ChessEngine.BoardHandle;
+using Microsoft.VisualBasic;
 
 namespace ChessEngine.Figures
 {
@@ -34,6 +35,8 @@ namespace ChessEngine.Figures
         {
             var legalDirection = Color == FigureColor.White ? 1 : -1;
 
+            if (Math.Abs(point.X - Location.X) > 1) return false;
+            
             if (!FirstMove)
             {
                 if (point.Y - Location.Y != legalDirection) return false;
@@ -41,6 +44,9 @@ namespace ChessEngine.Figures
             else
             {
                 if (point.Y - Location.Y != 2 * legalDirection && point.Y - Location.Y != legalDirection) return false;
+                if (Board.GetFigureOnLocation(new BoardPoint(Location.X, Location.Y + legalDirection)) is not null)
+                    if(Math.Abs(point.Y - Location.Y) != 1 && Math.Abs(point.X - Location.X) != 1)
+                        return false;
             }
             
 
@@ -54,7 +60,7 @@ namespace ChessEngine.Figures
             {
                 if (point.X - Location.X != 0)
                 {
-                    enPassaintLegality = CheckEnPassaint(point, legalDirection);
+                    enPassaintLegality = CheckEnPassaint(point, legalDirection, Color);
                     if (!enPassaintLegality) return false;
                 }
                 
@@ -62,12 +68,13 @@ namespace ChessEngine.Figures
             return base.CheckMoveLegality(point);
         }
 
-        private bool CheckEnPassaint(BoardPoint point, int direction)
+        private bool CheckEnPassaint(BoardPoint point, int direction, FigureColor color)
         {
             var enPassaintPosition = new BoardPoint(point.X, point.Y - direction);
             var figureOnEnPassaint = Board.GetFigureOnLocation(enPassaintPosition);
             if (figureOnEnPassaint is Pawn)
             {
+                if (figureOnEnPassaint.Color == color) return false;
                 var pawn = figureOnEnPassaint as Pawn;
                 if (pawn.EnPassaintable)
                 {
