@@ -93,7 +93,6 @@ namespace ChessEngine.Figures
                 var moveLength = Math.Abs(point.Y - Location.Y);
                 EnPassaintable = moveLength == 2;
             }
-
             base.ChangeLocation(point);
         }
     }

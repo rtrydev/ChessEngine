@@ -87,7 +87,7 @@ namespace ChessEngine.BoardHandle
         {
             var figure = GetFigureOnLocation(fromLocation);
             if(figure is null) return;
-            var pawnsOfColor = GetPawnsOfColor(figure.Color);
+            var pawnsOfColor = GetPawnsOfColor(figure.Color == FigureColor.White ? FigureColor.Black : FigureColor.White);
             foreach (var pawn in pawnsOfColor)
             {
                 pawn.EnPassaintable = false;

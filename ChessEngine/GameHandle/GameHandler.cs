@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using ChessEngine.BoardHandle;
 using ChessEngine.Figures;
 
@@ -179,6 +180,108 @@ namespace ChessEngine.GameHandle
             if(state == GameState.Ongoing) Console.WriteLine("Stopped by user");
             else Console.WriteLine(state);
 
+        }
+
+        public string GetFEN()
+        {
+            var sb = new StringBuilder();
+            for (int i = 7; i >= 0; i--)
+            {
+                var emptyCount = 0;
+                for (int j = 0; j < 8; j++)
+                {
+                    
+                    var figure = _board.GetFigureOnLocation(new BoardPoint(j, i));
+                    if (figure is not null)
+                    {
+                        if (emptyCount != 0) sb.Append(emptyCount);
+                        emptyCount = 0;
+                        var name = FigureNames.GetFigureName(figure);
+                        if (figure.Color == FigureColor.White) name = name.ToUpper();
+                        sb.Append(name);
+                    }
+                    else
+                    {
+                        emptyCount++;
+                    }
+                }
+                if (emptyCount != 0) sb.Append(emptyCount);
+                if (i != 0) sb.Append("/");
+            }
+
+            sb.Append(" ");
+            if (ColorToPlay == FigureColor.White) sb.Append("w");
+            else sb.Append("b");
+            sb.Append(" ");
+
+            var castleInfo = "";
+            var whiteKingLocation = _board.FindKingByColor(FigureColor.White);
+            if (whiteKingLocation is not null)
+            {
+                var whiteKing = _board.GetFigureOnLocation(whiteKingLocation) as King;
+                if (whiteKing.CanCastle)
+                {
+                    var kingRook = _board.GetFigureOnLocation(BoardPoint.FromString("h1")) as Rook;
+                    if (kingRook is not null)
+                    {
+                        if (kingRook.CanCastle) castleInfo += "K";
+                    }
+                    var queenRook = _board.GetFigureOnLocation(BoardPoint.FromString("a1")) as Rook;
+                    if (queenRook is not null)
+                    {
+                        if (queenRook.CanCastle) castleInfo += "Q";
+                    }
+                }
+                
+            }
+            var blackKingLocation = _board.FindKingByColor(FigureColor.Black);
+            if (blackKingLocation is not null)
+            {
+                var blackKing = _board.GetFigureOnLocation(blackKingLocation) as King;
+                if (blackKing.CanCastle)
+                {
+                    var kingRook = _board.GetFigureOnLocation(BoardPoint.FromString("h8")) as Rook;
+                    if (kingRook is not null)
+                    {
+                        if (kingRook.CanCastle) castleInfo += "k";
+                    }
+                    var queenRook = _board.GetFigureOnLocation(BoardPoint.FromString("a8")) as Rook;
+                    if (queenRook is not null)
+                    {
+                        if (queenRook.CanCastle) castleInfo += "q";
+                    }
+                }
+                
+            }
+
+            if (castleInfo != "") sb.Append(castleInfo);
+            else sb.Append("-");
+            sb.Append(" ");
+
+            var enPassaint = "-";
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    var location = new BoardPoint(i, j);
+                    var pawn = _board.GetFigureOnLocation(location);
+                    if (pawn is Pawn)
+                    {
+                        if ((pawn as Pawn).EnPassaintable)
+                        {
+                            int direction = pawn.Color == FigureColor.White ? 1 : -1;
+                            var boardLocation = new BoardPoint(i, j - direction);
+                            enPassaint = boardLocation.ToString();
+                            break;
+                        }
+                    }
+                }
+                if(enPassaint != "-") break;
+            }
+
+            sb.Append(enPassaint);
+
+            return sb.ToString();
         }
 
         public int CalculateNodeCount(string fen, string moves, int depth, bool showMoves)

@@ -8,7 +8,6 @@ namespace ChessRunner
         static void Main(string[] args)
         {
             var handler = new GameHandler();
-            handler.InitializeGame();
             handler.StartGame();
         }
     }
