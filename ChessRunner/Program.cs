@@ -1,10 +1,7 @@
 ﻿using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Channels;
 using ChessEngine.GameHandle;
 
-namespace ChessEngine
+namespace ChessRunner
 {
     class Program
     {
@@ -13,7 +10,6 @@ namespace ChessEngine
             var handler = new GameHandler();
             handler.InitializeGame();
             handler.StartGame();
-
         }
     }
 }

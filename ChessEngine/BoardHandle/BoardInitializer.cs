@@ -2,7 +2,7 @@ using ChessEngine.Figures;
 
 namespace ChessEngine.BoardHandle
 {
-    public class BoardInitializer
+    class BoardInitializer
     {
         public void InitializeDefault(Board board)
         {

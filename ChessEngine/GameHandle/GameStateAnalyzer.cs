@@ -4,7 +4,7 @@ using ChessEngine.Figures;
 
 namespace ChessEngine.GameHandle
 {
-    public class GameStateAnalyzer
+    class GameStateAnalyzer
     {
         public GameState GetGameState(Board board, FigureColor colorToPlay)
         {

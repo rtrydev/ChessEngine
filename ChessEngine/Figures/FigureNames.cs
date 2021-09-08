@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace ChessEngine.Figures
 {
-    public class FigureNames
+    class FigureNames
     {
         public static string GetFigureName(Figure figure)
         {

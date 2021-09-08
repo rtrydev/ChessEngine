@@ -3,7 +3,7 @@ using ChessEngine.BoardHandle;
 
 namespace ChessEngine.Figures
 {
-    public class FigureFactory
+    class FigureFactory
     {
         public static Figure CreateFigure(string name, BoardPoint locationOnBoard, FigureColor color, Board board)
         {

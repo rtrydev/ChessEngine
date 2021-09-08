@@ -4,7 +4,7 @@ using ChessEngine.BoardHandle;
 
 namespace ChessEngine.Figures
 {
-    public class Bishop : Figure
+    class Bishop : Figure
     {
         public Bishop(FigureColor color, Board board, BoardPoint location) : base(color, board, location)
         {

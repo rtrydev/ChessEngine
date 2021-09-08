@@ -4,7 +4,7 @@ using Microsoft.VisualBasic;
 
 namespace ChessEngine.Figures
 {
-    public class Pawn : Figure
+    class Pawn : Figure
     {
         public bool EnPassaintable { get; set; }
         public bool FirstMove { get; set; }

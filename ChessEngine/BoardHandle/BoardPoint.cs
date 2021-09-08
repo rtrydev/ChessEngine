@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace ChessEngine.BoardHandle
 {
-    public class BoardPoint
+    class BoardPoint
     {
         public int X;
         public int Y;

@@ -3,7 +3,7 @@ using ChessEngine.BoardHandle;
 
 namespace ChessEngine.Figures
 {
-    public class Knight : Figure
+    class Knight : Figure
     {
         public Knight(FigureColor color, Board board, BoardPoint location) : base(color, board, location)
         {

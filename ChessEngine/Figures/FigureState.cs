@@ -2,7 +2,7 @@ using ChessEngine.BoardHandle;
 
 namespace ChessEngine.Figures
 {
-    public class FigureState
+    class FigureState
     {
         public bool FirstMove { get; set; }
         public bool EnPassaintable { get; set; }

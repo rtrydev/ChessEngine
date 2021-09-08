@@ -4,7 +4,7 @@ using ChessEngine.BoardHandle;
 
 namespace ChessEngine.Figures
 {
-    public class Rook : Figure
+    class Rook : Figure
     {
         public bool CanCastle { get; set; }
         public Rook(FigureColor color, Board board, BoardPoint location) : base(color, board, location)
