@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using ChessEngine.BoardHandle;
 
 namespace ChessEngine.Figures
@@ -67,9 +68,15 @@ namespace ChessEngine.Figures
                         return false;
                     }
 
-                    if (Board.LookForCheckOnLocation(new BoardPoint(Location.X + direction, Location.Y), Color))
+                    var pointsBetween = new List<BoardPoint>();
+                    for (int i = 1; i < lenght; i++)
                     {
-                        return false;
+                        pointsBetween.Add(new BoardPoint(Location.X + i * direction, Location.Y));
+                    }
+                    
+                    foreach (var location in pointsBetween)
+                    {
+                        if (Board.LookForCheckOnLocation(location, Color)) return false;
                     }
                 }
 

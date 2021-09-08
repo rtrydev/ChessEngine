@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ChessEngine.BoardHandle;
 using ChessEngine.Figures;
 
@@ -7,6 +8,7 @@ namespace ChessEngine.GameHandle
 {
     public class GameHandler
     {
+        private List<Board> _boardHistory;
         private Board _board;
         private GameStateAnalyzer _stateAnalyzer;
         private BoardInitializer _boardInitializer;
@@ -17,6 +19,7 @@ namespace ChessEngine.GameHandle
         public GameHandler()
         {
             _board = new Board();
+            _boardHistory = new List<Board>();
             _boardInitializer = new BoardInitializer();
             _stateAnalyzer = new GameStateAnalyzer();
             ColorToPlay = FigureColor.White;
@@ -80,6 +83,7 @@ namespace ChessEngine.GameHandle
                 if (figure is Pawn && (to.Y == 0 || to.Y == 7)) return;
                 if (_board.CheckMoveLegality(from, to))
                 {
+                    _boardHistory.Add(new Board(_board)); 
                     _board.MoveFigureToLocation(from, to, GetMoveType(_board, from, to));
                     ColorToPlay = ColorToPlay == FigureColor.White ? FigureColor.Black : FigureColor.White;
                 }
@@ -97,10 +101,22 @@ namespace ChessEngine.GameHandle
                 if(!(to.Y == 0 || to.Y == 7)) return;
                 if (_board.CheckMoveLegality(from, to))
                 {
+                    _boardHistory.Add(new Board(_board)); 
                     _board.PromotePawn(from, to, desiredFigure);
                     ColorToPlay = ColorToPlay == FigureColor.White ? FigureColor.Black : FigureColor.White;
                 }
             }
+        }
+
+        public void UndoMove()
+        {
+            if (_boardHistory.Count != 0)
+            {
+                ColorToPlay = ColorToPlay == FigureColor.White ? FigureColor.Black : FigureColor.White;
+                _board = new Board(_boardHistory.Last());
+                _boardHistory.RemoveAt(_boardHistory.Count - 1);
+            }
+            
         }
 
         public void InitializeGame()
@@ -161,6 +177,65 @@ namespace ChessEngine.GameHandle
             if(state == GameState.Ongoing) Console.WriteLine("Stopped by user");
             else Console.WriteLine(state);
 
+        }
+
+        public int CalculateNodeCount(string fen, string moves, int depth, bool showMoves)
+        {
+            if(fen is null) InitializeGame();
+            else InitializeGame(fen);
+
+            if (moves is not null)
+            {
+                var moveStrings = moves.Split(" ");
+                var moveList = moveStrings.ToList();
+                foreach (var move in moveList)
+                {
+                    SendMove(move);
+                }
+            }
+            
+            if (showMoves)
+            {
+                var count = 0;
+                var firstMoves = GetLegalMoves();
+                foreach (var move in firstMoves)
+                {
+                    SendMove(move);
+                    var currentCount = CalculateNodes(depth - 1);
+                    UndoMove();
+                    Console.WriteLine(move + ": " + currentCount);
+                    count += currentCount;
+                }
+
+                return count;
+            }
+            else
+            {
+                return CalculateNodes(depth);
+
+            }
+
+        }
+
+        private int CalculateNodes(int depth)
+        {
+            var movesCount = 0;
+            if (depth == 0) return 1;
+            
+            if (depth == 1)
+            {
+                return GetLegalMoves().Count();
+            }
+            
+            var moves = GetLegalMoves();
+            foreach (var move in moves)
+            {
+                SendMove(move);
+                movesCount += CalculateNodes(depth - 1);
+                UndoMove();
+            }
+
+            return movesCount;
         }
 
         private SpecialMove GetMoveType(Board board, BoardPoint from, BoardPoint to)

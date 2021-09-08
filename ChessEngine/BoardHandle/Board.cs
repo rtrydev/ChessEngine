@@ -178,6 +178,12 @@ namespace ChessEngine.BoardHandle
 
         public bool LookForCheckOnLocation(BoardPoint location, FigureColor color)
         {
+            var placedDummy = false;
+            if (GetFigureOnLocation(location) is null)
+            {
+                AddFigureOnLocation("p", location, color);
+                placedDummy = true;
+            }
             for (int i = 0; i < 8; i++)
             {
                 for (int j = 0; j < 8; j++)
@@ -186,11 +192,15 @@ namespace ChessEngine.BoardHandle
                     if (figure is not null)
                     {
                         if (figure.Color == color) continue;
-                        if (figure.CheckMoveLegality(location)) return true;
+                        if (figure.CheckMoveLegality(location))
+                        {
+                            if(placedDummy) SetFigureOnLocation(location, null);
+                            return true;
+                        }
                     }
                 }
             }
-
+            if(placedDummy) SetFigureOnLocation(location, null);
             return false;
         }
 
