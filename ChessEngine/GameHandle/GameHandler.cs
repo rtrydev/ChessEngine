@@ -145,6 +145,7 @@ namespace ChessEngine.GameHandle
                     var to = BoardPoint.FromString(move.Substring(2, 2));
                     if (to is null) continue;
                     var figure = _board.GetFigureOnLocation(from);
+                    if(figure.Color != ColorToPlay) continue;
                     if (figure is Pawn && (to.Y == 0 || to.Y == 7)) continue;
                     if (_board.CheckMoveLegality(from, to))
                     {
@@ -162,6 +163,7 @@ namespace ChessEngine.GameHandle
                     if (to is null) continue;
                     var desiredFigure = move.Substring(4, 1);
                     var figure = _board.GetFigureOnLocation(from);
+                    if(figure.Color != ColorToPlay) continue;
                     if(figure is not Pawn) continue;
                     if(!(to.Y == 0 || to.Y == 7)) continue;
                     if (_board.CheckMoveLegality(from, to))
