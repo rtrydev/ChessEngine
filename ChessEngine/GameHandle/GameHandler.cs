@@ -13,9 +13,10 @@ namespace ChessEngine.GameHandle
         private Board _board;
         private GameStateAnalyzer _stateAnalyzer;
         private BoardInitializer _boardInitializer;
+        private List<string> _moveList;
         public FigureColor ColorToPlay { get; set; }
 
-        public GameState GameState => _stateAnalyzer.GetGameState(_board, ColorToPlay);
+        public GameState GameState => _stateAnalyzer.GetGameState(_board, ColorToPlay, _moveList);
 
         public GameHandler()
         {
@@ -23,6 +24,7 @@ namespace ChessEngine.GameHandle
             _boardHistory = new List<Board>();
             _boardInitializer = new BoardInitializer();
             _stateAnalyzer = new GameStateAnalyzer();
+            _moveList = new List<string>();
             ColorToPlay = FigureColor.White;
         }
 
@@ -74,6 +76,9 @@ namespace ChessEngine.GameHandle
         public void SendMove(string move)
         {
             if(move is null) return;
+            var legalMoves = GetLegalMoves();
+            if(!legalMoves.Contains(move)) return;
+            
             if (move.Length == 4)
             {
                 var from = BoardPoint.FromString(move.Substring(0, 2));
@@ -85,6 +90,8 @@ namespace ChessEngine.GameHandle
                 if (_board.CheckMoveLegality(from, to))
                 {
                     _boardHistory.Add(new Board(_board)); 
+                    _moveList.Add(move);
+                    
                     _board.MoveFigureToLocation(from, to, GetMoveType(_board, from, to));
                     ColorToPlay = ColorToPlay == FigureColor.White ? FigureColor.Black : FigureColor.White;
                 }
@@ -103,6 +110,7 @@ namespace ChessEngine.GameHandle
                 if (_board.CheckMoveLegality(from, to))
                 {
                     _boardHistory.Add(new Board(_board)); 
+                    _moveList.Add(move);
                     _board.PromotePawn(from, to, desiredFigure);
                     ColorToPlay = ColorToPlay == FigureColor.White ? FigureColor.Black : FigureColor.White;
                 }
@@ -115,6 +123,7 @@ namespace ChessEngine.GameHandle
             {
                 ColorToPlay = ColorToPlay == FigureColor.White ? FigureColor.Black : FigureColor.White;
                 _board = new Board(_boardHistory.Last());
+                _moveList.RemoveAt(_moveList.Count - 1);
                 _boardHistory.RemoveAt(_boardHistory.Count - 1);
             }
             
@@ -134,7 +143,7 @@ namespace ChessEngine.GameHandle
         public void StartGame()
         {
             DrawGameboard();
-            while (_stateAnalyzer.GetGameState(_board, ColorToPlay) == GameState.Ongoing)
+            while (_stateAnalyzer.GetGameState(_board, ColorToPlay, _moveList) == GameState.Ongoing)
             {
                 var move = Console.ReadLine();
                 if(move is null) continue;
@@ -176,7 +185,7 @@ namespace ChessEngine.GameHandle
                 }
             }
 
-            var state = _stateAnalyzer.GetGameState(_board, ColorToPlay);
+            var state = _stateAnalyzer.GetGameState(_board, ColorToPlay, _moveList);
             if(state == GameState.Ongoing) Console.WriteLine("Stopped by user");
             else Console.WriteLine(state);
 
@@ -341,6 +350,16 @@ namespace ChessEngine.GameHandle
             }
 
             return movesCount;
+        }
+
+        public string GetNextMove()
+        {
+            var legalMoves = GetLegalMoves();
+            if (legalMoves.Count() != 0)
+            {
+                return legalMoves.OrderBy(x => Guid.NewGuid()).ToList()[0];
+            }
+            else return "";
         }
 
         private SpecialMove GetMoveType(Board board, BoardPoint from, BoardPoint to)
