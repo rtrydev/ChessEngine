@@ -48,7 +48,7 @@ namespace ChessEngine.ChessAI
 
         private float GetPieceValue(Figure figure, BoardPoint location)
         {
-            var multiplier = 0.05f;
+            var multiplier = 0.03f;
             if (figure is King)
             {
                 return PieceValues.King +
