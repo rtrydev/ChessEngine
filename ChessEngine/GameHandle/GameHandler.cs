@@ -370,8 +370,8 @@ namespace ChessEngine.GameHandle
             var legalMoves = GetLegalMoves().ToList();
             if (legalMoves.Count() != 0)
             {
-                legalMoves.OrderBy(x => Guid.NewGuid());
-                return legalMoves[0];
+                var rnd = new Random();
+                return legalMoves[rnd.Next(0, legalMoves.Count())];
             }
 
             return "";

@@ -20,6 +20,8 @@ namespace ChessEngine.ChessAI
                 whitePoints += 10000;
             if (handler.GameState == GameState.WhiteKingMated)
                 blackPoints += 10000;
+            if (handler.GameState == GameState.Draw)
+                return 0;
 
             for (int i = 0; i < 8; i++)
             {
