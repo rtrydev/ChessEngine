@@ -8,7 +8,7 @@ namespace ChessEngine.Figures
         Black
     }
     
-    abstract class Figure
+    public abstract class Figure
     {
         public FigureColor Color { get; }
         public Board Board { get; }

@@ -1,6 +1,6 @@
 namespace ChessEngine.Figures
 {
-    enum SpecialMove
+    public enum SpecialMove
     {
         None,
         EnPassaint,

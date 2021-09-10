@@ -7,7 +7,7 @@ using ChessEngine.Figures;
 
 namespace ChessEngine.BoardHandle
 {
-    class Board
+    public class Board
     {
         private Figure[][] _boardState;
 

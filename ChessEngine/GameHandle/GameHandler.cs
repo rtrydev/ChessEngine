@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ChessEngine.BoardHandle;
+using ChessEngine.ChessAI;
 using ChessEngine.Figures;
 
 namespace ChessEngine.GameHandle
@@ -14,6 +15,7 @@ namespace ChessEngine.GameHandle
         private GameStateAnalyzer _stateAnalyzer;
         private BoardInitializer _boardInitializer;
         private List<string> _moveList;
+        public Board Board => _board;
         public FigureColor ColorToPlay { get; set; }
 
         public GameState GameState => _stateAnalyzer.GetGameState(_board, ColorToPlay, _moveList);
@@ -357,9 +359,28 @@ namespace ChessEngine.GameHandle
             var legalMoves = GetLegalMoves();
             if (legalMoves.Count() != 0)
             {
-                return legalMoves.OrderBy(x => Guid.NewGuid()).ToList()[0];
+                var explorer = new MoveExplorer();
+                return explorer.GetBestMove(GetFEN());
             }
             else return "";
+        }
+
+        public void GetEvaluation()
+        {
+            var explorer = new MoveExplorer();
+            var moves = GetLegalMoves();
+            foreach (var move in moves)
+            {
+                Console.WriteLine(move +": "+explorer.GetEvaluationAfterMove(GetFEN(), move));
+            }
+
+            Console.WriteLine();
+        }
+
+        public float GetCurrentEvaluation()
+        {
+            var eval = new PositionEvaluator();
+            return eval.EvaluatePosition(GetFEN());
         }
 
         private SpecialMove GetMoveType(Board board, BoardPoint from, BoardPoint to)
