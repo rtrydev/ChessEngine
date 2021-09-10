@@ -46,7 +46,7 @@ namespace ChessEngine.ChessAI
 
         private float GetPieceValue(Figure figure, BoardPoint location)
         {
-            var multiplier = 0.1f;
+            var multiplier = 0.05f;
             if (figure is King)
             {
                 return PieceValues.King +
@@ -61,7 +61,7 @@ namespace ChessEngine.ChessAI
                 return PieceValues.Knight + multiplier * PieceHeatmaps.Knight[ColorPosition(figure.Color, location.Y)][location.X];
             if (figure is Pawn)
             {
-                return PieceValues.Pawn + PieceHeatmaps.Pawn[ColorPosition(figure.Color, location.Y)][location.X];
+                return PieceValues.Pawn + multiplier * 2 * PieceHeatmaps.Pawn[ColorPosition(figure.Color, location.Y)][location.X];
             }
 
             return 0;

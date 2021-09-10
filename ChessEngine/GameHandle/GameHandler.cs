@@ -365,6 +365,18 @@ namespace ChessEngine.GameHandle
             else return "";
         }
 
+        public string GetRandomNextMove()
+        {
+            var legalMoves = GetLegalMoves().ToList();
+            if (legalMoves.Count() != 0)
+            {
+                legalMoves.OrderBy(x => Guid.NewGuid());
+                return legalMoves[0];
+            }
+
+            return "";
+        }
+
         public void GetEvaluation()
         {
             var explorer = new MoveExplorer();
