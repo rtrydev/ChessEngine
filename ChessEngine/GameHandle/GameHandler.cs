@@ -18,7 +18,11 @@ namespace ChessEngine.GameHandle
         public Board Board => _board;
         public FigureColor ColorToPlay { get; set; }
 
-        public GameState GameState => _stateAnalyzer.GetGameState(_board, ColorToPlay, _moveList);
+        public GameState GameState
+        {
+            get;
+            set;
+        }
 
         public GameHandler()
         {
@@ -47,26 +51,22 @@ namespace ChessEngine.GameHandle
                     var figure = _board.GetFigureOnLocation(currentPoint);
                     if (figure is null) continue;
                     if(figure.Color != ColorToPlay) continue;
-                    for (int k = 0; k < 8; k++)
+                    var possibleTargets = figure.GetPotentialTargetSquares();
+                    foreach (var target in possibleTargets)
                     {
-                        for (int l = 0; l < 8; l++)
+                        var move = currentPoint.ToString() + target.ToString();
+                        if (_board.CheckMoveLegality(currentPoint, target))
                         {
-                            var currentDestination = new BoardPoint(k, l);
-                            var move = currentPoint.ToString() + currentDestination.ToString();
-
-                            if (_board.CheckMoveLegality(currentPoint, currentDestination))
+                            if (figure is Pawn && (target.Y == 0 || target.Y == 7))
                             {
-                                if (figure is Pawn && (currentDestination.Y == 0 || currentDestination.Y == 7))
-                                {
-                                    moves.Add(move + "q");
-                                    moves.Add(move + "n");
-                                    moves.Add(move + "b");
-                                    moves.Add(move + "r");
-                                }
-                                else
-                                {
-                                    moves.Add(move);
-                                }
+                                moves.Add(move + "q");
+                                moves.Add(move + "n");
+                                moves.Add(move + "b");
+                                moves.Add(move + "r");
+                            }
+                            else
+                            {
+                                moves.Add(move);
                             }
                         }
                     }
@@ -89,14 +89,12 @@ namespace ChessEngine.GameHandle
                 if (to is null) return;
                 var figure = _board.GetFigureOnLocation(from);
                 if (figure is Pawn && (to.Y == 0 || to.Y == 7)) return;
-                if (_board.CheckMoveLegality(from, to))
-                {
-                    _boardHistory.Add(new Board(_board)); 
-                    _moveList.Add(move);
-                    
-                    _board.MoveFigureToLocation(from, to, GetMoveType(_board, from, to));
-                    ColorToPlay = ColorToPlay == FigureColor.White ? FigureColor.Black : FigureColor.White;
-                }
+                _boardHistory.Add(new Board(_board)); 
+                _moveList.Add(move);
+                _board.MoveFigureToLocation(from, to, GetMoveType(_board, from, to));
+                ColorToPlay = ColorToPlay == FigureColor.White ? FigureColor.Black : FigureColor.White;
+                GameState = _stateAnalyzer.GetGameState(_board, ColorToPlay, _moveList);
+
             }
 
             if (move.Length == 5)
@@ -109,13 +107,11 @@ namespace ChessEngine.GameHandle
                 var figure = _board.GetFigureOnLocation(from);
                 if(figure is not Pawn) return;
                 if(!(to.Y == 0 || to.Y == 7)) return;
-                if (_board.CheckMoveLegality(from, to))
-                {
-                    _boardHistory.Add(new Board(_board)); 
-                    _moveList.Add(move);
-                    _board.PromotePawn(from, to, desiredFigure);
-                    ColorToPlay = ColorToPlay == FigureColor.White ? FigureColor.Black : FigureColor.White;
-                }
+                _boardHistory.Add(new Board(_board)); 
+                _moveList.Add(move);
+                _board.PromotePawn(from, to, desiredFigure);
+                ColorToPlay = ColorToPlay == FigureColor.White ? FigureColor.Black : FigureColor.White;
+                GameState = _stateAnalyzer.GetGameState(_board, ColorToPlay, _moveList);
             }
         }
 
@@ -127,6 +123,7 @@ namespace ChessEngine.GameHandle
                 _board = new Board(_boardHistory.Last());
                 _moveList.RemoveAt(_moveList.Count - 1);
                 _boardHistory.RemoveAt(_boardHistory.Count - 1);
+                GameState = _stateAnalyzer.GetGameState(_board, ColorToPlay, _moveList);
             }
             
         }
@@ -135,11 +132,13 @@ namespace ChessEngine.GameHandle
         {
             _boardInitializer.InitializeDefault(_board);
             ColorToPlay = FigureColor.White;
+            GameState = _stateAnalyzer.GetGameState(_board, ColorToPlay, _moveList);
         }
 
         public void InitializeGame(string fen)
         {
             ColorToPlay = _boardInitializer.InitializeFromFEN(_board,fen);
+            GameState = _stateAnalyzer.GetGameState(_board, ColorToPlay, _moveList);
         }
 
         public void StartGame()
@@ -360,7 +359,7 @@ namespace ChessEngine.GameHandle
             if (legalMoves.Count() != 0)
             {
                 var explorer = new MoveExplorer();
-                return explorer.GetBestMove(GetFEN(), true);
+                return explorer.GetBestMove(GetFEN(), 2);
             }
             else return "";
         }

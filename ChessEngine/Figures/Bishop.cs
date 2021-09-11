@@ -14,6 +14,20 @@ namespace ChessEngine.Figures
         {
         }
 
+        public override IEnumerable<BoardPoint> GetPotentialTargetSquares()
+        {
+            var points = new List<BoardPoint>();
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    points.Add(new BoardPoint(i,j));
+                }
+            }
+
+            return points;
+        }
+
         public override FigureState GetState()
         {
             return new FigureState()

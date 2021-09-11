@@ -25,28 +25,12 @@ namespace ChessEngine.GameHandle
                 if (!hasLegalMoves) return GameState.Draw;
             }
 
-            if (moves.Count() > 159) return GameState.Draw;
-
             var figureCount = GetFigureCount(board);
             if (figureCount == 2) return GameState.Draw;
             if (figureCount == 3)
             {
                 if (FindKnight(board)) return GameState.Draw;
                 if (FindKBishop(board)) return GameState.Draw;
-            }
-            
-            
-            if (moves.Count >= 10)
-            {
-                var count = moves.Count;
-                int c = 0;
-                if (moves[count - 1] == moves[count - 5] &&
-                    moves[count - 9] == moves[count - 5]) c++;
-                if (moves[count - 2] == moves[count - 6] &&
-                    moves[count - 10] == moves[count - 6]) c++;
-                if (moves[count - 4] == moves[count - 8]) c++;
-                if (moves[count - 7] == moves[count - 3]) c++;
-                if (c == 4) return GameState.Draw;
             }
 
             return GameState.Ongoing;
@@ -134,13 +118,13 @@ namespace ChessEngine.GameHandle
                         for (int l = 0; l < 8; l++)
                         {
                             var locationToMove = new BoardPoint(k, l);
-                            if (board.CheckMoveLegality(location, locationToMove)) legalMovesCount++;
+                            if (board.CheckMoveLegality(location, locationToMove)) return true;
                         }
                     }
                 }
             }
 
-            return legalMovesCount > 0;
+            return false;
 
         }
     }

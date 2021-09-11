@@ -21,6 +21,19 @@ namespace ChessEngine.Figures
                 Location = new BoardPoint(this.Location.X, this.Location.Y)
             };
         }
+        public override IEnumerable<BoardPoint> GetPotentialTargetSquares()
+        {
+            var points = new List<BoardPoint>();
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    points.Add(new BoardPoint(i,j));
+                }
+            }
+
+            return points;
+        }
 
         public override bool CheckMoveLegality(BoardPoint point)
         {

@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using ChessEngine.BoardHandle;
 
 namespace ChessEngine.Figures
@@ -45,6 +47,11 @@ namespace ChessEngine.Figures
         {
             Location.X = point.X;
             Location.Y = point.Y;
+        }
+
+        public virtual IEnumerable<BoardPoint> GetPotentialTargetSquares()
+        {
+            return null;
         }
         
     }

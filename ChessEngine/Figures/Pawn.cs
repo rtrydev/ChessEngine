@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using ChessEngine.BoardHandle;
 using Microsoft.VisualBasic;
 
@@ -19,6 +20,27 @@ namespace ChessEngine.Figures
         {
             EnPassaintable = state.EnPassaintable;
             FirstMove = state.FirstMove;
+        }
+        
+        public override IEnumerable<BoardPoint> GetPotentialTargetSquares()
+        {
+            var points = new List<BoardPoint>();
+            
+            int startX = Location.X > 0 ? Location.X - 1 : 0;
+            int endX = Location.X > 6 ? 7 : Location.X + 1;
+            int startY = Location.Y > 1 ? Location.Y - 2 : 0;
+            int endY = Location.Y > 5 ? 7 : Location.Y + 2;
+            
+            for (int j = startX; j <= endX; j++)
+            {
+                for (int i = startY; i <= endY; i++)
+                {
+                    points.Add(new BoardPoint(j ,i));
+                    
+                }
+            }
+
+            return points;
         }
 
         public override FigureState GetState()

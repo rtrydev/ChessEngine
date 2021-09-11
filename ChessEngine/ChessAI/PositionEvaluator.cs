@@ -44,13 +44,13 @@ namespace ChessEngine.ChessAI
             }
 
             var legalMovesCount = handler.CalculateNodeCount(position, null, 1, false);
-            float multiplier = handler.ColorToPlay == FigureColor.Black ? -0.05f : 0.05f;
+            float multiplier = handler.ColorToPlay == FigureColor.Black ? -0.02f : 0.02f;
             return whitePoints - blackPoints + legalMovesCount * multiplier;
         }
 
         private float GetPieceValue(Figure figure, BoardPoint location)
         {
-            var multiplier = 0.04f;
+            var multiplier = 0.01f;
             if (figure is King)
             {
                 return PieceValues.King +

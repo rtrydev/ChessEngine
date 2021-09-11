@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using ChessEngine.BoardHandle;
 
 namespace ChessEngine.Figures
@@ -19,6 +20,26 @@ namespace ChessEngine.Figures
             {
                 Location = new BoardPoint(this.Location.X, this.Location.Y)
             };
+        }
+        
+        public override IEnumerable<BoardPoint> GetPotentialTargetSquares()
+        {
+            var points = new List<BoardPoint>();
+            int startX = Location.X > 1 ? Location.X - 2 : 0;
+            int endX = Location.X > 5 ? 7 : Location.X + 2;
+            int startY = Location.Y > 1 ? Location.Y - 2 : 0;
+            int endY = Location.Y > 5 ? 7 : Location.Y + 2;
+            
+            for (int j = startX; j <= endX; j++)
+            {
+                for (int i = startY; i <= endY; i++)
+                {
+                    points.Add(new BoardPoint(j ,i));
+                    
+                }
+            }
+
+            return points;
         }
 
         public override bool CheckMoveLegality(BoardPoint point)

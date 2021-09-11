@@ -16,6 +16,18 @@ namespace ChessEngine.Figures
         {
             CanCastle = state.CanCastle;
         }
+        
+        public override IEnumerable<BoardPoint> GetPotentialTargetSquares()
+        {
+            var points = new List<BoardPoint>();
+            for (int i = 0; i < 8; i++)
+            {
+                points.Add(new BoardPoint(i, Location.Y));
+                points.Add(new BoardPoint(Location.X, i));
+            }
+
+            return points;
+        }
 
         public override bool CheckMoveLegality(BoardPoint point)
         {
