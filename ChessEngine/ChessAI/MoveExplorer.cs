@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using ChessEngine.Figures;
 using ChessEngine.GameHandle;
 
@@ -25,10 +26,12 @@ namespace ChessEngine.ChessAI
             var legalMoves = handler.GetLegalMoves().ToList();
             var moveRatings = new float[legalMoves.Count()];
 
-            for (int i = 0; i < legalMoves.Count(); i++)
+            Parallel.For(0, legalMoves.Count(), i =>
             {
-                moveRatings[i] = GetMinMaxEval(handler, legalMoves[i], depth);
-            }
+                var hndl = new GameHandler();
+                hndl.InitializeGame(handler.GetFEN());
+                moveRatings[i] = GetMinMaxEval(hndl, legalMoves[i], depth);
+            });
 
             var bestValue = handler.ColorToPlay == FigureColor.Black ? moveRatings.Min() : moveRatings.Max();
             var bestMoveIndex = Array.IndexOf(moveRatings, bestValue);
