@@ -23,14 +23,40 @@ namespace ChessEngine.Figures
         }
         public override IEnumerable<BoardPoint> GetPotentialTargetSquares()
         {
+            var x = Location.X;
+            var y = Location.Y;
             var points = new List<BoardPoint>();
             for (int i = 0; i < 8; i++)
             {
-                for (int j = 0; j < 8; j++)
-                {
-                    points.Add(new BoardPoint(i,j));
-                }
+                points.Add(new BoardPoint(i, Location.Y));
+                points.Add(new BoardPoint(Location.X, i));
             }
+            var tempX = x;
+            var tempY = y;
+
+            while (tempX < 8 && tempY < 8)
+            {
+                points.Add(new BoardPoint(tempX++, tempY++));
+            }
+            tempX = x;
+            tempY = y;
+            
+            while (tempX < 8 && tempY >= 0)
+            {
+                points.Add(new BoardPoint(tempX++, tempY--));
+            } 
+            tempX = x;
+            tempY = y;
+            while (tempX >= 0 && tempY >= 0)
+            {
+                points.Add(new BoardPoint(tempX--, tempY--));
+            }
+            tempX = x;
+            tempY = y;
+            while (tempX >= 0 && tempY < 8)
+            {
+                points.Add(new BoardPoint(tempX--, tempY++));
+            }   
 
             return points;
         }
