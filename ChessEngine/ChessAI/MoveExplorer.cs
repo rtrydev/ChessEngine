@@ -21,14 +21,13 @@ namespace ChessEngine.ChessAI
         {
             var handler = new GameHandler();
             handler.InitializeGame(positionFEN);
-            var bestEval = handler.ColorToPlay == FigureColor.White ? -1000000f : 1000000f;
-            var baseEval = handler.GetCurrentEvaluation();
+            
             var legalMoves = handler.GetLegalMoves().ToList();
             var moveRatings = new float[legalMoves.Count()];
 
             for (int i = 0; i < legalMoves.Count(); i++)
             {
-                moveRatings[i] = GetMinMaxEval(handler, legalMoves[i]);
+                moveRatings[i] = GetMinMaxEval(handler, legalMoves[i], depth);
             }
 
             var bestValue = handler.ColorToPlay == FigureColor.Black ? moveRatings.Min() : moveRatings.Max();
@@ -36,7 +35,7 @@ namespace ChessEngine.ChessAI
             return legalMoves[bestMoveIndex];
         }
 
-        private float GetMinMaxEval(GameHandler handler, string move)
+        private float GetMinMaxEval(GameHandler handler, string move, int depth)
         {
             handler.SendMove(move);
             var possibleResponses = handler.GetLegalMoves().ToList();
@@ -58,12 +57,32 @@ namespace ChessEngine.ChessAI
                     return -100000f;
                 }
             }
-
-            float eval = GetMax(handler, possibleResponses).eval;
-            handler.UndoMove();
-
-            return eval;
             
+            if (depth == 1)
+            {
+                float eval = GetMax(handler, possibleResponses).eval;
+                handler.UndoMove();
+
+                return eval;
+            }
+
+            possibleResponses = handler.ColorToPlay == FigureColor.White
+                ? possibleResponses.OrderByDescending(x => GetMinMaxEval(handler, x, depth - 1)).ToList()
+                : possibleResponses.OrderBy(x => GetMinMaxEval(handler, x, depth - 1)).ToList();
+
+            var toTake = possibleResponses.Count() > 5 ? possibleResponses.Count() / 4 : possibleResponses.Count();
+            var responsesAfterElimination = possibleResponses.Take(toTake).ToList();
+            var evals = new float[responsesAfterElimination.Count()];
+            for (int i = 0; i < responsesAfterElimination.Count(); i++)
+            {
+                handler.SendMove(responsesAfterElimination[i]);
+                evals[i] = GetMinMaxEval(handler, responsesAfterElimination[i], depth - 1);
+                handler.UndoMove();
+            }
+
+            return handler.ColorToPlay == FigureColor.White ? evals.Min() : evals.Max();
+
+
         }
 
         private (string move, float eval) GetMax(GameHandler handler, List<string> moves)
