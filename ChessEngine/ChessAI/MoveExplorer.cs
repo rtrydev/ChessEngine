@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Runtime.InteropServices;
 using ChessEngine.Figures;
 using ChessEngine.GameHandle;
 
@@ -15,7 +16,7 @@ namespace ChessEngine.ChessAI
             return handler.GetCurrentEvaluation();
         }
 
-        public string GetBestMove(string positionFEN)
+        public string GetBestMove(string positionFEN, bool goDeeper)
         {
             var handler = new GameHandler();
             handler.InitializeGame(positionFEN);
@@ -38,10 +39,42 @@ namespace ChessEngine.ChessAI
                     
                 }
 
+                var indexOfBestResponse = -1;
+                if (movesEvalChange2.Length != 0)
+                {
+                    indexOfBestResponse = handler.ColorToPlay == FigureColor.Black
+                        ? Array.IndexOf(movesEvalChange2, movesEvalChange2.Min())
+                        : Array.IndexOf(movesEvalChange2, movesEvalChange2.Max());
+                }
+                handler.SendMove(secondMoves[indexOfBestResponse]);
+                var thirdMoves = handler.GetLegalMoves().ToList();
+                var baseEval3 = handler.GetCurrentEvaluation();
+                var movesEvalChange3 = new float[thirdMoves.Count()];
+                float change2 = 0;
+                for (int j = 0; j < thirdMoves.Count(); j++)
+                {
+                    var eval3 = GetEvaluationAfterMove(handler.GetFEN(),thirdMoves[j]);
+                    movesEvalChange3[j] = eval3 - baseEval;
+                    handler.SendMove(thirdMoves[j]);
+                    var fourthMoves = handler.GetLegalMoves().ToList();
+                    var movesEvalChange4 = new float[fourthMoves.Count()];
+                    for (int k = 0; k < fourthMoves.Count(); k++)
+                    {
+                        var eval4 = GetEvaluationAfterMove(handler.GetFEN(), fourthMoves[k]);
+                        movesEvalChange4[k] = eval4 - baseEval;
+                    
+                    }
+
+                    
+                    if(movesEvalChange4.Length != 0)
+                        change2 = handler.ColorToPlay == FigureColor.Black ? movesEvalChange4.Min() : movesEvalChange4.Max();
+                }
+                
                 float change = 0;
                 if(movesEvalChange2.Length != 0)
                     change = handler.ColorToPlay == FigureColor.Black ? movesEvalChange2.Min() : movesEvalChange2.Max();
                 movesEvalChange[i] += change;
+                movesEvalChange[i] += change2;
                 handler.UndoMove();
             }
 

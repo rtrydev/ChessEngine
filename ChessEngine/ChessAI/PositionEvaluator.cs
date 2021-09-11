@@ -43,12 +43,14 @@ namespace ChessEngine.ChessAI
                 }
             }
 
-            return whitePoints - blackPoints;
+            var legalMovesCount = handler.CalculateNodeCount(position, null, 1, false);
+            float multiplier = handler.ColorToPlay == FigureColor.Black ? -0.05f : 0.05f;
+            return whitePoints - blackPoints + legalMovesCount * multiplier;
         }
 
         private float GetPieceValue(Figure figure, BoardPoint location)
         {
-            var multiplier = 0.03f;
+            var multiplier = 0.04f;
             if (figure is King)
             {
                 return PieceValues.King +
@@ -63,7 +65,7 @@ namespace ChessEngine.ChessAI
                 return PieceValues.Knight + multiplier * PieceHeatmaps.Knight[ColorPosition(figure.Color, location.Y)][location.X];
             if (figure is Pawn)
             {
-                return PieceValues.Pawn + multiplier * 2 * PieceHeatmaps.Pawn[ColorPosition(figure.Color, location.Y)][location.X];
+                return PieceValues.Pawn + multiplier * PieceHeatmaps.Pawn[ColorPosition(figure.Color, location.Y)][location.X];
             }
 
             return 0;

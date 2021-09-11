@@ -360,7 +360,7 @@ namespace ChessEngine.GameHandle
             if (legalMoves.Count() != 0)
             {
                 var explorer = new MoveExplorer();
-                return explorer.GetBestMove(GetFEN());
+                return explorer.GetBestMove(GetFEN(), true);
             }
             else return "";
         }
