@@ -36,8 +36,9 @@ namespace ChessEngine.GameHandle
 
         public void DrawGameboard()
         {
-            Console.Clear();
+            Console.WriteLine();
             Console.WriteLine(_board);
+            Console.WriteLine();
         }
         
         public IEnumerable<string> GetLegalMoves()

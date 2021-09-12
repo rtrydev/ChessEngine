@@ -142,7 +142,9 @@ namespace ChessEngine.BoardHandle
             {
                 var location = BoardPoint.FromString(segments[3]);
                 location.Y = location.Y == 2 ? location.Y + 1 : location.Y - 1;
-                (board.GetFigureOnLocation(location) as Pawn).EnPassaintable = true;
+                var pawn = board.GetFigureOnLocation(location) as Pawn;
+                if(pawn is not null)
+                    pawn.EnPassaintable = true;
             }
 
             var castles = segments[2];
